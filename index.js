@@ -1,15 +1,10 @@
+require("newrelic");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+// Load New Relic agent
 
 const app = express();
-
-// Load New Relic agent
-const newrelic = require("newrelic");
-newrelic.instrumentLoadedModule(
-  "express", // the module's name, as a string
-  express // the module instance
-);
 
 app.use(bodyParser.json());
 
@@ -22,12 +17,12 @@ mongoose
     }
   )
   .then(() => {
-    console.log("Connected to MongoDB");
+    console.log("Connected To MongoDB Database");
   })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB", err);
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
   });
-
+mongoose.Promise = global.Promise;
 const User = mongoose.model("User", {
   name: String,
   mobile: String,
@@ -38,34 +33,30 @@ const User = mongoose.model("User", {
 
 app.post("/users", async (req, res) => {
   // Start a transaction
-  const transaction =
-    require("newrelic").startBackgroundTransaction("Create User");
+  const transaction = require("newrelic").startWebTransaction("Create User");
 
   try {
     const user = new User(req.body);
     await user.save();
     res.status(201).json(user);
+    newrelic.endTransaction();
   } catch (err) {
     res.status(400).json({ message: err.message });
-  } finally {
-    // End the transaction
-    // transaction.then();
+    newrelic.endTransaction();
   }
 });
 
 app.get("/users", async (req, res) => {
   // Start a transaction
-  const transaction =
-    require("newrelic").startBackgroundTransaction("Get Users");
+  // const transaction = require("newrelic").startWebTransaction("Get Users");
 
   try {
     const users = await User.find({});
     res.json({ users });
+    newrelic.endTransaction();
   } catch (err) {
     res.status(500).json({ message: err.message });
-  } finally {
-    // End the transaction
-    // transaction.then();
+    newrelic.endTransaction();
   }
 });
 
