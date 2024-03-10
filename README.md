@@ -26,3 +26,30 @@ To get started with this project, follow the instructions below:
    ```
 # NewRelic Configuration
 The NewRelic configuration for this project is located in the `./newrelic.js` file. You can customize the NewRelic settings in this file according to your requirements.
+
+
+# Testing API
+
+## Create User
+
+- **Method:** `POST`
+- **Base URL:** `http://localhost:3000/`
+- **URL:** `{{baseUrl}}/users`
+- **Payload:**
+  ```json
+  {
+    "name": "YOUR_NAME",
+    "mobile": "MOBILE NUMBER",
+    "email": "EMAIL",
+    "address": "ADDRESS",
+    "gender": "GENDER"
+  }
+  ```
+
+## Get Users  
+- **Method:** `GET`
+- **Base URL:** `http://localhost:3000/`
+- **URL:** `{{baseUrl}}/users`
+ 
+   
+ 
